@@ -1,0 +1,71 @@
+Class Distribution:
+label
+0    397476
+1    157572
+Name: count, dtype: int64
+
+Training set size: 377432
+Validation set size: 66606
+Test set size: 111010
+
+attndensenet
+--- Final Test Results ---
+Test Accuracy: 0.9639
+Test Precision: 0.9209
+Test Recall: 0.9548
+Test F1-Score: 0.9375
+
+CBAM densenet
+--- Final Test Results ---
+Test Accuracy: 0.9647
+Test Precision: 0.9254
+Test Recall: 0.9525
+Test F1-Score: 0.9388
+
+attnresnet50
+--- Final Test Results ---
+Test Accuracy: 0.9441
+Test Precision: 0.8784
+Test Recall: 0.9320
+Test F1-Score: 0.9044
+
+attnvgg16
+--- Final Test Results ---
+Test Accuracy: 0.9439
+Test Precision: 0.8731
+Test Recall: 0.9390
+Test F1-Score: 0.9049
+
+*proposed solution*
+ESFANET
+--- Test Set Results ---
+  - Accuracy:  0.9638
+  - Precision: 0.9562 (Macro)
+  - Recall:    0.9547 (Macro)
+  - F1 Score:  0.9555 (Macro)
+--- Classification Report ---
+                  precision    recall  f1-score   support
+
+Class 0 (No IDC)       0.97      0.98      0.97     79495
+   Class 1 (IDC)       0.94      0.93      0.94     31515
+
+        accuracy                           0.96    111010
+       macro avg       0.96      0.95      0.96    111010
+    weighted avg       0.96      0.96      0.96    111010
+
+
+ESFANET BreakHis dataset results
+--- Test Set Results ---
+  - Accuracy:  0.9608
+  - Precision: 0.9559 (Macro)
+  - Recall:    0.9528 (Macro)
+  - F1 Score:  0.9543 (Macro)
+--- Classification Report ---
+              precision    recall  f1-score   support
+
+      Benign       0.94      0.93      0.94       496
+   Malignant       0.97      0.97      0.97      1086
+
+    accuracy                           0.96      1582
+   macro avg       0.96      0.95      0.95      1582
+weighted avg       0.96      0.96      0.96      1582
