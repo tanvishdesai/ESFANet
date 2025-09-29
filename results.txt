@@ -69,3 +69,52 @@ ESFANET BreakHis dataset results
     accuracy                           0.96      1582
    macro avg       0.96      0.95      0.95      1582
 weighted avg       0.96      0.96      0.96      1582
+
+
+full (no Edge-Aware Spatial Attention)
+--- Test Set Results (Ablation Model) ---
+  - Accuracy:  0.9644
+  - Precision: 0.9576 (Macro)
+  - Recall:    0.9547 (Macro)
+  - F1 Score:  0.9561 (Macro)
+--- Classification Report (Ablation Model) ---
+                  precision    recall  f1-score   support
+
+Class 0 (No IDC)       0.97      0.98      0.98     79495
+   Class 1 (IDC)       0.94      0.93      0.94     31515
+
+        accuracy                           0.96    111010
+       macro avg       0.96      0.95      0.96    111010
+    weighted avg       0.96      0.96      0.96    111010
+
+backboene + full attention(no transformer)
+--- Test Set Results (Ablation: Attention Only) ---
+  - Accuracy:  0.9661
+  - Precision: 0.9589 (Macro)
+  - Recall:    0.9577 (Macro)
+  - F1 Score:  0.9583 (Macro)
+--- Classification Report ---
+                  precision    recall  f1-score   support
+
+Class 0 (No IDC)       0.98      0.98      0.98     79495
+   Class 1 (IDC)       0.94      0.94      0.94     31515
+
+        accuracy                           0.97    111010
+       macro avg       0.96      0.96      0.96    111010
+    weighted avg       0.97      0.97      0.97    111010
+
+full ( no Frequency-Aware Channel Attention )
+--- Test Set Results ---
+  - Accuracy:  0.9639
+  - Precision: 0.9559 (Macro)
+  - Recall:    0.9553 (Macro)
+  - F1 Score:  0.9556 (Macro)
+--- Classification Report ---
+                  precision    recall  f1-score   support
+
+Class 0 (No IDC)       0.97      0.98      0.97     79495
+   Class 1 (IDC)       0.94      0.94      0.94     31515
+
+        accuracy                           0.96    111010
+       macro avg       0.96      0.96      0.96    111010
+    weighted avg       0.96      0.96      0.96    111010
