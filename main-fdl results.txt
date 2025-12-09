@@ -1,31 +1,10 @@
-======================================================================
-Edge-aware Federated Histopathology (Optimized for Preprocessed Data)
-======================================================================
-======================================================================
-Checking for preprocessed data...
-Preprocessing not found. Starting one-time image extraction and resizing...
-Source Parquet Files: '/kaggle/input/fedalery-karye-ji/patchcamelyon_data'
-Destination for PNGs: './preprocessed_patchcamelyon'
-
-Processing split: 'train'...
-  Converting train files: 100%|██████████| 13/13 [11:00<00:00, 50.77s/it]
-Processing split: 'test'...
-  Converting test files: 100%|██████████| 2/2 [02:06<00:00, 63.21s/it]
-Processing split: 'validation'...
-  Converting validation files: 100%|██████████| 2/2 [01:21<00:00, 40.80s/it]
-Preprocessing complete. Images are saved and ready for fast loading.
-======================================================================
-
 Loading datasets from preprocessed image folders...
 
 Creating non-IID splits for 5 clients...
   Attempting data split with random seed...
   Successfully created a valid split where all clients have data (using seed 16).
 
-Initializing federated learning components...
-  Client 0 - Samples: 131071, Class dist: [36309 94762], Weights: [1.8049382 1.3831599]
-Downloading: "https://download.pytorch.org/models/mobilenet_v2-b0353104.pth" to /root/.cache/torch/hub/checkpoints/mobilenet_v2-b0353104.pth
-100%|██████████| 13.6M/13.6M [00:00<00:00, 107MB/s] 
+
   Client 1 - Samples: 95945, Class dist: [94763  1182], Weights: [ 0.5062366 81.171745 ]
   Client 2 - Samples: 11828, Class dist: [    0 11828], Weights: [1. 2.]
   Client 3 - Samples: 9963, Class dist: [   0 9963], Weights: [1. 2.]
