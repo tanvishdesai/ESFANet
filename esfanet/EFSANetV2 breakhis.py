@@ -36,7 +36,7 @@ warnings.filterwarnings("ignore")
 
 # --- Configuration ---
 # <--- MODIFICATION: Aligned hyperparameters with successful baselines
-DATA_DIR = 'breakhis'  # Updated to match local dataset structure
+DATA_DIR = '/kaggle/input/breakhis'  # Updated to match local dataset structure
 IMAGE_SIZE = 96
 BATCH_SIZE = 128
 EPOCHS = 30
@@ -136,74 +136,92 @@ class TransformerEncoderBlock(nn.Module):
         src = self.norm2(src)
         return src
 
-# 2.3 The Full Revised EFSANet Model
-class EFSANet(nn.Module):
+class AgenticEFSANet(nn.Module):
     def __init__(self, num_classes=2, pretrained=True):
-        super(EFSANet, self).__init__()
+        super(AgenticEFSANet, self).__init__()
         
-        # <--- MODIFICATION: Use a powerful pretrained DenseNet121 backbone
+        # 1. Backbone
         base_model = models.densenet121(pretrained=pretrained)
         self.backbone = base_model.features
+        num_features = base_model.classifier.in_features 
         
-        # Get the number of output features from the backbone
-        num_features = base_model.classifier.in_features # This is 1024 for DenseNet121
-        
-        # <--- MODIFICATION: Adapt your novel components to the backbone's output
+        # 2. Attention (Your Novelty)
         self.attention = EdgeFrequencyAttention(num_features)
         
-        # For a 96x96 input, DenseNet121 features are 3x3. 3*3 = 9 patches.
-        # The feature dimension (d_model) is 1024.
-        self.pos_embedding = nn.Parameter(torch.randn(1, 9, num_features)) 
-        self.transformer_block = TransformerEncoderBlock(d_model=num_features, nhead=8)
+        # 3. Global Average Pooling (Replaces Transformer)
+        self.pool = nn.AdaptiveAvgPool2d((1, 1))
 
-        # <--- MODIFICATION: Classifier now takes the rich 1024-dim features
+        # 4. Agentic Classifier Head (Evidence)
         self.classifier = nn.Sequential(
             nn.LayerNorm(num_features),
             nn.Linear(num_features, 512),
             nn.ReLU(),
             nn.Dropout(0.5),
-            nn.Linear(512, num_classes)
+            nn.Linear(512, num_classes),
+            nn.ReLU() # <--- Keeps Evidence Non-Negative
         )
 
     def forward(self, x):
-        # 1. Extract rich features using the pretrained backbone
         features = self.backbone(x)
-        
-        # 2. Apply your novel attention mechanism
         attended_features = self.attention(features)
         
-        # 3. Prepare for Transformer
-        b, c, h, w = attended_features.shape
-        transformer_input = attended_features.permute(0, 2, 3, 1).reshape(b, h * w, c)
+        # Pooling instead of Transformer
+        pooled = self.pool(attended_features)
+        flat = torch.flatten(pooled, 1)
         
-        # Add positional embedding
-        transformer_input = transformer_input + self.pos_embedding
-        
-        # 4. Process with Transformer
-        transformer_output = self.transformer_block(transformer_input)
+        # Evidence Output
+        evidence = self.classifier(flat)
+        return evidence
+# --- 3. Evidential Deep Learning Loss (EDL) ---
 
-        # 5. Classify using the mean of the transformer outputs
-        final_vector = transformer_output.mean(dim=1)
-        logits = self.classifier(final_vector)
-            
-        return logits
+def kl_divergence(alpha, num_classes, device=None):
+    if device is None:
+        device = alpha.device
+    ones = torch.ones([1, num_classes], dtype=torch.float32, device=device)
+    sum_alpha = torch.sum(alpha, dim=1, keepdim=True)
+    first_term = (
+        torch.lgamma(sum_alpha)
+        - torch.lgamma(alpha).sum(dim=1, keepdim=True)
+        - torch.lgamma(ones.sum(dim=1, keepdim=True))
+        + torch.lgamma(ones).sum(dim=1, keepdim=True)
+    )
+    second_term = (
+        (alpha - ones)
+        .mul(torch.digamma(alpha) - torch.digamma(sum_alpha))
+        .sum(dim=1, keepdim=True)
+    )
+    return first_term + second_term
 
-# --- 3. Focal Loss for Class Imbalance (Unchanged) ---
-class FocalLoss(nn.Module):
-    def __init__(self, alpha=0.8, gamma=2, reduction='mean'):
-        super(FocalLoss, self).__init__()
-        self.alpha = alpha
-        self.gamma = gamma
-        self.reduction = reduction
+def edl_loss_function(output, target, epoch, num_classes, annealing_step, device):
+    evidence = output # Output is already ReLU activated from model
+    alpha = evidence + 1
+    S = torch.sum(alpha, dim=1, keepdim=True)
+    belief = alpha / S
 
-    def forward(self, inputs, targets):
-        ce_loss = F.cross_entropy(inputs, targets, reduction='none')
-        pt = torch.exp(-ce_loss)
-        focal_loss = self.alpha * (1 - pt)**self.gamma * ce_loss
-        
-        if self.reduction == 'mean':
-            return focal_loss.mean()
-        return focal_loss.sum()
+    # A: MSE Loss for Evidence
+    y = F.one_hot(target, num_classes).float()
+    loss_mse = torch.sum((y - belief) ** 2 + ((alpha * (S - alpha)) / (S * S * (S + 1))), dim=1)
+    
+    # B: KL Divergence regularization
+    # annealing_coef = torch.min(torch.tensor(1.0, dtype=torch.float32), torch.tensor(epoch / annealing_step, dtype=torch.float32))
+    annealing_coef = min(1, epoch / annealing_step)
+    
+    alpha_tilde = y + (1 - y) * alpha
+    kl = kl_divergence(alpha_tilde, num_classes, device=device)
+    
+    return torch.mean(loss_mse + annealing_coef * kl.squeeze())
+
+class EDLLoss(nn.Module):
+    def __init__(self, num_classes=2, annealing_step=10, device='cuda'):
+        super(EDLLoss, self).__init__()
+        self.num_classes = num_classes
+        self.annealing_step = annealing_step
+        self.device = device
+        self.epoch = 0
+
+    def forward(self, output, target):
+        return edl_loss_function(output, target, self.epoch, self.num_classes, self.annealing_step, self.device)
+
 
 # --- 4. Training and Evaluation Logic (Unchanged) ---
 
@@ -239,30 +257,48 @@ def train_one_epoch(model, dataloader, criterion, optimizer, device):
     _, _, f1, _ = precision_recall_fscore_support(all_labels, all_preds, average='macro', zero_division=0)
     return epoch_loss, f1
 
-def evaluate(model, dataloader, criterion, device):
+def evaluate_agentic(model, dataloader, criterion, device):
     model.eval()
     running_loss = 0.0
     all_preds = []
     all_labels = []
+    
+    # Store uncertainty data for analysis
+    uncertainties = []
+    correctness = [] # 1 if correct, 0 if wrong
 
     progress_bar = tqdm(dataloader, desc="Evaluating", leave=False)
     with torch.no_grad():
         for inputs, labels in progress_bar:
             inputs, labels = inputs.to(device), labels.to(device)
-            outputs = model(inputs)
+            outputs = model(inputs) # These are Evidence values (e)
             loss = criterion(outputs, labels)
 
             running_loss += loss.item() * inputs.size(0)
-            _, preds = torch.max(outputs, 1)
+            
+            # --- AGENTIC MATH ---
+            evidence = outputs
+            alpha = evidence + 1
+            S = torch.sum(alpha, dim=1, keepdim=True)
+            belief = alpha / S
+            uncertainty = 2 / S # num_classes / S
+            # --------------------
+
+            _, preds = torch.max(outputs, 1) # Max evidence = Max probability
+            
             all_preds.extend(preds.cpu().numpy())
             all_labels.extend(labels.cpu().numpy())
+            uncertainties.extend(uncertainty.cpu().numpy().flatten())
+            
+            # Track if prediction was correct
+            batch_correct = preds.eq(labels).cpu().numpy()
+            correctness.extend(batch_correct)
 
     epoch_loss = running_loss / len(dataloader.dataset)
     accuracy = accuracy_score(all_labels, all_preds)
     precision, recall, f1, _ = precision_recall_fscore_support(all_labels, all_preds, average='macro', zero_division=0)
     
-    return epoch_loss, accuracy, precision, recall, f1
-
+    return epoch_loss, accuracy, precision, recall, f1, uncertainties, correctness
 # --- 5. Main Execution Block ---
 
 def get_label_from_breakhis_path(path):
@@ -294,6 +330,38 @@ def get_label_from_breakhis_path(path):
     # If we can't determine, print warning and default to benign
     print(f"Warning: Could not determine label for {path}")
     return 0
+
+def plot_risk_retention(uncertainties, correctness):
+    # Sort by uncertainty (low to high)
+    data = list(zip(uncertainties, correctness))
+    data.sort(key=lambda x: x[0])
+    
+    retention_rates = np.linspace(1.0, 0.1, 20) # Keep 100%, 95%, ... 10%
+    accuracies = []
+    
+    n_total = len(data)
+    for rate in retention_rates:
+        n_keep = int(n_total * rate)
+        if n_keep == 0: break
+        
+        # Take the top n_keep most certain predictions
+        subset = data[:n_keep]
+        # Calculate accuracy of this subset
+        n_correct = sum([x[1] for x in subset])
+        acc = n_correct / n_keep
+        accuracies.append(acc)
+        
+    plt.figure(figsize=(8, 6))
+    plt.plot(retention_rates, accuracies, marker='o')
+    plt.gca().invert_xaxis() # 100% -> 10%
+    plt.title("Risk-Retention Curve: Agentic Performance")
+    plt.xlabel("Retention Rate (Fraction of Data Accepted by Agent)")
+    plt.ylabel("Accuracy on Accepted Data")
+    plt.grid(True)
+    plt.savefig("risk_retention_curve.png")
+    print("Risk Retention Curve Saved.")
+
+# Run this inside your main using the u_scores and correct_mask lists
 
 def main():
     torch.manual_seed(RANDOM_SEED)
@@ -350,16 +418,16 @@ def main():
     test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=4, pin_memory=True)
 
     print("\nStep 2: Initializing the revised EFSANet model...")
-    model = EFSANet(num_classes=2).to(DEVICE)
+    model = AgenticEFSANet(num_classes=2).to(DEVICE)
     
     class_counts = train_df['label'].value_counts()
     benign_count = class_counts.get(0, 0)
     malignant_count = class_counts.get(1, 0)
     alpha = benign_count / (benign_count + malignant_count + 1e-6)  # Alpha for benign class
     print(f"Class distribution in training set: Benign: {benign_count}, Malignant: {malignant_count}")
-    print(f"Using Focal Loss with calculated alpha: {alpha:.4f} (for benign class)")
+    print(f"Using Evidential Deep Learning (EDL) Loss")
     
-    criterion = FocalLoss(alpha=alpha, gamma=2)
+    criterion = EDLLoss(num_classes=2, annealing_step=10, device=DEVICE)
     optimizer = optim.AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-3)
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=EPOCHS, eta_min=1e-6)
 
@@ -367,6 +435,7 @@ def main():
     best_f1_score = 0.0
     
     for epoch in range(EPOCHS):
+        criterion.epoch = epoch # Update epoch for annealing
         start_time = time.time()
         print(f"\n--- Epoch {epoch+1}/{EPOCHS} ---")
         
@@ -376,7 +445,7 @@ def main():
             print("Training halted due to NaN loss.")
             break
             
-        val_loss, val_acc, val_prec, val_rec, val_f1 = evaluate(model, val_loader, criterion, DEVICE)
+        val_loss, val_acc, val_prec, val_rec, val_f1, _, _ = evaluate_agentic(model, val_loader, criterion, DEVICE)
         scheduler.step()
         
         elapsed_time = time.time() - start_time
@@ -396,9 +465,32 @@ def main():
     if os.path.exists('best_model_revised.pth'):
         print("\nStep 4: Performing final evaluation on the test set...")
         model.load_state_dict(torch.load('best_model_revised.pth'))
-        
-        test_loss, test_acc, test_prec, test_rec, test_f1 = evaluate(model, test_loader, criterion, DEVICE)
-        
+        # ... (Inside Main, after loading best model) ...
+        test_loss, test_acc, test_prec, test_rec, test_f1, u_scores, correct_mask = evaluate_agentic(model, test_loader, criterion, DEVICE)
+
+        # --- VISUALIZATION FOR PAPER ---
+        import seaborn as sns
+
+        u_scores = np.array(u_scores)
+        correct_mask = np.array(correct_mask)
+
+        # Separate uncertainties
+        u_correct = u_scores[correct_mask == 1]
+        u_wrong = u_scores[correct_mask == 0]
+
+        print(f"Average Uncertainty on Correct Predictions: {np.mean(u_correct):.4f}")
+        print(f"Average Uncertainty on Wrong Predictions:   {np.mean(u_wrong):.4f}")
+
+        plt.figure(figsize=(10, 6))
+        sns.kdeplot(u_correct, fill=True, label='Correct Predictions', color='green')
+        sns.kdeplot(u_wrong, fill=True, label='Wrong Predictions', color='red')
+        plt.title("Agentic capability: Uncertainty Distribution")
+        plt.xlabel("Uncertainty Score (u)")
+        plt.legend()
+        plt.savefig("uncertainty_plot.png")
+        print("Uncertainty plot saved.")        
+        plot_risk_retention(u_scores, correct_mask)
+ 
         print("\n--- Test Set Results ---")
         print(f"  - Accuracy:  {test_acc:.4f}")
         print(f"  - Precision: {test_prec:.4f} (Macro)")

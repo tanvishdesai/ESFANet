@@ -1,0 +1,2 @@
+attention_mode,test_accuracy,test_precision,test_recall,test_f1,avg_uncertainty_correct,avg_uncertainty_wrong
+edge_only,0.9604450049545086,0.9522945936497327,0.9502140330405733,0.9512464805258674,0.06119826,0.33852917

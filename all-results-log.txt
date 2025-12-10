@@ -1,0 +1,233 @@
+FedAvg-A
+  ======================================================================
+  FINAL RESULTS SUMMARY
+  ======================================================================
+
+  Classification Performance at Standard Threshold (0.50):
+    Final Accuracy:  0.8275
+    Final Precision: 0.8135
+    Final Recall:    0.8498
+    Final F1-Score:  0.8312
+    Final AUC:       0.9073
+
+  Classification Performance at FedAlert 
+  Threshold (0.75):
+    Final Accuracy:  0.8221
+    Final Precision: 0.8760
+    Final Recall:    0.7503
+    Final F1-Score:  0.8083
+    Final AUC:       0.9073
+
+FedAvg-B
+  Classification Performance at Standard Threshold (0.50):
+    Final Accuracy:  0.8353
+    Final Precision: 0.8440
+    Final Recall:    0.8226
+    Final F1-Score:  0.8331
+    Final AUC:       0.9187
+
+  Classification Performance at FedAlert Threshold (0.75):
+    Final Accuracy:  0.8116
+    Final Precision: 0.9089
+    Final Recall:    0.6924
+    Final F1-Score:  0.7860
+    Final AUC:       0.9187
+
+full - C
+  ======================================================================
+  FINAL RESULTS SUMMARY
+  ======================================================================
+
+  Classification Performance at Standard Threshold (0.50):
+    Final Accuracy:  0.8076
+    Final Precision: 0.7619
+    Final Recall:    0.8948
+    Final F1-Score:  0.8230
+    Final AUC:       0.9052
+
+  Classification Performance at FedAlert Threshold (0.75):
+    Final Accuracy:  0.8035
+    Final Precision: 0.8871
+    Final Recall:    0.6954
+    Final F1-Score:  0.7796
+    Final AUC:       0.9052
+
+FedAlert_Only-B
+  Classification Performance at Standard Threshold (0.50):
+    Final Accuracy:  0.8123
+    Final Precision: 0.9240
+    Final Recall:    0.6803
+    Final F1-Score:  0.7837
+    Final AUC:       0.9188
+
+  Classification Performance at FedAlert Threshold (0.75):
+    Final Accuracy:  0.7661
+    Final Precision: 0.9515
+    Final Recall:    0.5606
+    Final F1-Score:  0.7055
+    Final AUC:       0.9188
+
+FedAlert_Only-A
+  Classification Performance at Standard Threshold (0.50):
+    Final Accuracy:  0.8169
+    Final Precision: 0.7676
+    Final Recall:    0.9088
+    Final F1-Score:  0.8322
+    Final AUC:       0.9170
+
+  Classification Performance at FedAlert Threshold (0.75):
+    Final Accuracy:  0.8051
+    Final Precision: 0.9193
+    Final Recall:    0.6688
+    Final F1-Score:  0.7743
+    Final AUC:       0.9170
+
+FedAvg-C
+  Classification Performance at Standard Threshold (0.50):
+    Final Accuracy:  0.8085
+    Final Precision: 0.7865
+    Final Recall:    0.8467
+    Final F1-Score:  0.8155
+    Final AUC:       0.8975
+
+  Classification Performance at FedAlert Threshold (0.75):
+    Final Accuracy:  0.8081
+    Final Precision: 0.8545
+    Final Recall:    0.7424
+    Final F1-Score:  0.7945
+    Final AUC:       0.8975
+
+FedProx-A
+  Classification Performance at Standard Threshold (0.50):
+    Final Accuracy:  0.8337
+    Final Precision: 0.8436
+    Final Recall:    0.8190
+    Final F1-Score:  0.8311
+    Final AUC:       0.9188
+
+  Classification Performance at FedAlert Threshold (0.75):
+    Final Accuracy:  0.8047
+    Final Precision: 0.9176
+    Final Recall:    0.6694
+    Final F1-Score:  0.7741
+    Final AUC:       0.9188
+
+FedProx-B
+  Classification Performance at Standard Threshold (0.50):
+    Final Accuracy:  0.8316
+    Final Precision: 0.8321
+    Final Recall:    0.8307
+    Final F1-Score:  0.8314
+    Final AUC:       0.9146
+
+  Classification Performance at FedAlert Threshold (0.75):
+    Final Accuracy:  0.8014
+    Final Precision: 0.9104
+    Final Recall:    0.6684
+    Final F1-Score:  0.7708
+    Final AUC:       0.9146
+
+FedProx-C
+  Classification Performance at Standard Threshold (0.50):
+    Final Accuracy:  0.8226
+    Final Precision: 0.8189
+    Final Recall:    0.8283
+    Final F1-Score:  0.8236
+    Final AUC:       0.9093
+
+  Classification Performance at FedAlert Threshold (0.75):
+    Final Accuracy:  0.7528
+    Final Precision: 0.9393
+    Final Recall:    0.5403
+    Final F1-Score:  0.6860
+    Final AUC:       0.9093
+
+Full-A
+  Classification Performance at Standard Threshold (0.50):
+    Final Accuracy:  0.8032
+    Final Precision: 0.9200
+    Final Recall:    0.6639
+    Final F1-Score:  0.7712
+    Final AUC:       0.9201
+
+  Classification Performance at FedAlert Threshold (0.75):
+    Final Accuracy:  0.7697
+    Final Precision: 0.9478
+    Final Recall:    0.5707
+    Final F1-Score:  0.7124
+    Final AUC:       0.9201
+
+Full-B
+  Classification Performance at Standard Threshold (0.50):
+    Final Accuracy:  0.8179
+    Final Precision: 0.9066
+    Final Recall:    0.7086
+    Final F1-Score:  0.7954
+    Final AUC:       0.9197
+
+  Classification Performance at FedAlert Threshold (0.75):
+    Final Accuracy:  0.7864
+    Final Precision: 0.9359
+    Final Recall:    0.6147
+    Final F1-Score:  0.7420
+    Final AUC:       0.9197
+
+Consensus_Only-A
+  Classification Performance at Standard Threshold (0.50):
+    Final Accuracy:  0.8484
+    Final Precision: 0.8553
+    Final Recall:    0.8384
+    Final F1-Score:  0.8468
+    Final AUC:       0.9262
+
+  Classification Performance at FedAlert Threshold (0.75):
+    Final Accuracy:  0.8255
+    Final Precision: 0.9095
+    Final Recall:    0.7227
+    Final F1-Score:  0.8054
+    Final AUC:       0.9262
+
+FedAlert_Only-C
+  Classification Performance at Standard Threshold (0.50):
+    Final Accuracy:  0.4998
+    Final Precision: 0.4998
+    Final Recall:    1.0000
+    Final F1-Score:  0.6665
+    Final AUC:       0.8740
+
+  Classification Performance at FedAlert Threshold (0.75):
+    Final Accuracy:  0.4998
+    Final Precision: 0.4998
+    Final Recall:    1.0000
+    Final F1-Score:  0.6665
+    Final AUC:       0.8740
+
+Consensus_Only-B
+  Classification Performance at Standard Threshold (0.50):
+    Final Accuracy:  0.8203
+    Final Precision: 0.7856
+    Final Recall:    0.8807
+    Final F1-Score:  0.8305
+    Final AUC:       0.8986
+
+  Classification Performance at FedAlert Threshold (0.75):
+    Final Accuracy:  0.8182
+    Final Precision: 0.8503
+    Final Recall:    0.7722
+    Final F1-Score:  0.8093
+    Final AUC:       0.8986
+
+Consensus_Only-C
+  Classification Performance at Standard Threshold (0.50):
+    Final Accuracy:  0.8303
+    Final Precision: 0.8287
+    Final Recall:    0.8325
+    Final F1-Score:  0.8306
+    Final AUC:       0.9134
+
+  Classification Performance at FedAlert Threshold (0.75):
+    Final Accuracy:  0.8197
+    Final Precision: 0.8914
+    Final Recall:    0.7280
+    Final F1-Score:  0.8015
+    Final AUC:       0.9134

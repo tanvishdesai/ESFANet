@@ -1,0 +1,300 @@
+sing device: cuda
+PyTorch Version: 2.6.0+cu124
+Attention Mode: edge_only
+Visualization Enabled: True
+Step 1: Loading and splitting data (Parallel)...
+  Found 280 subdirectories to scan.
+Scanning Dirs: 100%|██████████| 280/280 [09:09<00:00,  1.96s/dir]
+  Total images found: 555048
+  Extracting labels...
+Extracting Labels: 100%|██████████| 555048/555048 [00:00<00:00, 1213858.00img/s]
+Dataset split:
+  - Training:   377432 images
+  - Validation: 66606 images
+  - Testing:    111010 images
+
+Step 2: Initializing EFSANet model with attention mode: edge_only...
+Downloading: "https://download.pytorch.org/models/densenet121-a639ec97.pth" to /root/.cache/torch/hub/checkpoints/densenet121-a639ec97.pth
+100%|██████████| 30.8M/30.8M [00:00<00:00, 189MB/s]
+Class distribution in training set: Class 0: 270284, Class 1: 107148
+Using Evidential Deep Learning (EDL) Loss
+
+Step 3: Starting model training...
+
+--- Epoch 1/30 ---
+                                                             
+Epoch 1 Summary | Time: 1018.47s | LR: 0.000100
+  Train Loss: 0.1753, Train F1: 0.8555
+  Val Loss:   0.1453, Val F1:   0.8790
+  Val Accuracy: 0.9014, Precision: 0.8784, Recall: 0.8796
+Validation F1 improved from 0.0000 to 0.8790. Saving model...
+
+--- Epoch 2/30 ---
+                                                             
+Epoch 2 Summary | Time: 532.60s | LR: 0.000099
+  Train Loss: 0.1830, Train F1: 0.8715
+  Val Loss:   0.1660, Val F1:   0.8812
+  Val Accuracy: 0.9045, Precision: 0.8857, Recall: 0.8771
+Validation F1 improved from 0.8790 to 0.8812. Saving model...
+
+--- Epoch 3/30 ---
+                                                             
+Epoch 3 Summary | Time: 533.49s | LR: 0.000098
+  Train Loss: 0.1791, Train F1: 0.8791
+  Val Loss:   0.1706, Val F1:   0.8845
+  Val Accuracy: 0.9076, Precision: 0.8914, Recall: 0.8784
+Validation F1 improved from 0.8812 to 0.8845. Saving model...
+
+--- Epoch 4/30 ---
+                                                             
+Epoch 4 Summary | Time: 529.64s | LR: 0.000096
+  Train Loss: 0.1780, Train F1: 0.8849
+  Val Loss:   0.1696, Val F1:   0.8900
+  Val Accuracy: 0.9118, Precision: 0.8961, Recall: 0.8844
+Validation F1 improved from 0.8845 to 0.8900. Saving model...
+
+--- Epoch 5/30 ---
+                                                             
+Epoch 5 Summary | Time: 531.45s | LR: 0.000093
+  Train Loss: 0.1767, Train F1: 0.8899
+  Val Loss:   0.1702, Val F1:   0.8966
+  Val Accuracy: 0.9151, Precision: 0.8930, Recall: 0.9004
+Validation F1 improved from 0.8900 to 0.8966. Saving model...
+
+--- Epoch 6/30 ---
+                                                             
+Epoch 6 Summary | Time: 532.08s | LR: 0.000091
+  Train Loss: 0.1749, Train F1: 0.8947
+  Val Loss:   0.1719, Val F1:   0.8980
+  Val Accuracy: 0.9172, Precision: 0.8989, Recall: 0.8970
+Validation F1 improved from 0.8966 to 0.8980. Saving model...
+
+--- Epoch 7/30 ---
+                                                             
+Epoch 7 Summary | Time: 533.83s | LR: 0.000087
+  Train Loss: 0.1724, Train F1: 0.9002
+  Val Loss:   0.1676, Val F1:   0.9028
+  Val Accuracy: 0.9209, Precision: 0.9026, Recall: 0.9030
+Validation F1 improved from 0.8980 to 0.9028. Saving model...
+
+--- Epoch 8/30 ---
+                                                             
+Epoch 8 Summary | Time: 541.08s | LR: 0.000084
+  Train Loss: 0.1693, Train F1: 0.9039
+  Val Loss:   0.1719, Val F1:   0.9025
+  Val Accuracy: 0.9219, Precision: 0.9091, Recall: 0.8966
+
+--- Epoch 9/30 ---
+                                                             
+Epoch 9 Summary | Time: 537.00s | LR: 0.000080
+  Train Loss: 0.1662, Train F1: 0.9086
+  Val Loss:   0.1677, Val F1:   0.9091
+  Val Accuracy: 0.9258, Precision: 0.9075, Recall: 0.9107
+Validation F1 improved from 0.9028 to 0.9091. Saving model...
+
+--- Epoch 10/30 ---
+                                                             
+Epoch 10 Summary | Time: 541.36s | LR: 0.000075
+  Train Loss: 0.1624, Train F1: 0.9128
+  Val Loss:   0.1694, Val F1:   0.9103
+  Val Accuracy: 0.9269, Precision: 0.9096, Recall: 0.9111
+Validation F1 improved from 0.9091 to 0.9103. Saving model...
+
+--- Epoch 11/30 ---
+                                                             
+Epoch 11 Summary | Time: 540.98s | LR: 0.000071
+  Train Loss: 0.1570, Train F1: 0.9177
+  Val Loss:   0.1663, Val F1:   0.9140
+  Val Accuracy: 0.9302, Precision: 0.9151, Recall: 0.9129
+Validation F1 improved from 0.9103 to 0.9140. Saving model...
+
+--- Epoch 12/30 ---
+                                                             
+Epoch 12 Summary | Time: 542.46s | LR: 0.000066
+  Train Loss: 0.1483, Train F1: 0.9229
+  Val Loss:   0.1645, Val F1:   0.9160
+  Val Accuracy: 0.9322, Precision: 0.9193, Recall: 0.9129
+Validation F1 improved from 0.9140 to 0.9160. Saving model...
+
+--- Epoch 13/30 ---
+                                                             
+Epoch 13 Summary | Time: 545.27s | LR: 0.000061
+  Train Loss: 0.1396, Train F1: 0.9279
+  Val Loss:   0.1616, Val F1:   0.9174
+  Val Accuracy: 0.9328, Precision: 0.9175, Recall: 0.9173
+Validation F1 improved from 0.9160 to 0.9174. Saving model...
+
+--- Epoch 14/30 ---
+                                                             
+Epoch 14 Summary | Time: 549.41s | LR: 0.000056
+  Train Loss: 0.1318, Train F1: 0.9321
+  Val Loss:   0.1563, Val F1:   0.9199
+  Val Accuracy: 0.9356, Precision: 0.9249, Recall: 0.9152
+Validation F1 improved from 0.9174 to 0.9199. Saving model...
+
+--- Epoch 15/30 ---
+                                                             
+Epoch 15 Summary | Time: 547.14s | LR: 0.000051
+  Train Loss: 0.1225, Train F1: 0.9375
+  Val Loss:   0.1589, Val F1:   0.9224
+  Val Accuracy: 0.9360, Precision: 0.9172, Recall: 0.9280
+Validation F1 improved from 0.9199 to 0.9224. Saving model...
+
+--- Epoch 16/30 ---
+                                                             
+Epoch 16 Summary | Time: 1555.00s | LR: 0.000045
+  Train Loss: 0.1143, Train F1: 0.9423
+  Val Loss:   0.1541, Val F1:   0.9268
+  Val Accuracy: 0.9405, Precision: 0.9272, Recall: 0.9264
+Validation F1 improved from 0.9224 to 0.9268. Saving model...
+
+--- Epoch 17/30 ---
+                                                             
+Epoch 17 Summary | Time: 549.70s | LR: 0.000040
+  Train Loss: 0.1055, Train F1: 0.9470
+  Val Loss:   0.1455, Val F1:   0.9305
+  Val Accuracy: 0.9437, Precision: 0.9324, Recall: 0.9286
+Validation F1 improved from 0.9268 to 0.9305. Saving model...
+
+--- Epoch 18/30 ---
+                                                             
+Epoch 18 Summary | Time: 545.00s | LR: 0.000035
+  Train Loss: 0.0975, Train F1: 0.9515
+  Val Loss:   0.1416, Val F1:   0.9341
+  Val Accuracy: 0.9467, Precision: 0.9367, Recall: 0.9316
+Validation F1 improved from 0.9305 to 0.9341. Saving model...
+
+--- Epoch 19/30 ---
+                                                             
+Epoch 19 Summary | Time: 543.46s | LR: 0.000030
+  Train Loss: 0.0906, Train F1: 0.9551
+  Val Loss:   0.1390, Val F1:   0.9373
+  Val Accuracy: 0.9490, Precision: 0.9369, Recall: 0.9378
+Validation F1 improved from 0.9341 to 0.9373. Saving model...
+
+--- Epoch 20/30 ---
+                                                             
+Epoch 20 Summary | Time: 541.59s | LR: 0.000026
+  Train Loss: 0.0837, Train F1: 0.9586
+  Val Loss:   0.1374, Val F1:   0.9378
+  Val Accuracy: 0.9495, Precision: 0.9386, Recall: 0.9370
+Validation F1 improved from 0.9373 to 0.9378. Saving model...
+
+--- Epoch 21/30 ---
+                                                             
+Epoch 21 Summary | Time: 550.67s | LR: 0.000021
+  Train Loss: 0.0762, Train F1: 0.9628
+  Val Loss:   0.1352, Val F1:   0.9401
+  Val Accuracy: 0.9514, Precision: 0.9416, Recall: 0.9386
+Validation F1 improved from 0.9378 to 0.9401. Saving model...
+
+--- Epoch 22/30 ---
+                                                             
+Epoch 22 Summary | Time: 546.14s | LR: 0.000017
+  Train Loss: 0.0711, Train F1: 0.9657
+  Val Loss:   0.1305, Val F1:   0.9433
+  Val Accuracy: 0.9540, Precision: 0.9438, Recall: 0.9429
+Validation F1 improved from 0.9401 to 0.9433. Saving model...
+
+--- Epoch 23/30 ---
+                                                             
+Epoch 23 Summary | Time: 541.32s | LR: 0.000014
+  Train Loss: 0.0653, Train F1: 0.9687
+  Val Loss:   0.1308, Val F1:   0.9431
+  Val Accuracy: 0.9538, Precision: 0.9433, Recall: 0.9429
+
+--- Epoch 24/30 ---
+                                                             
+Epoch 24 Summary | Time: 542.14s | LR: 0.000010
+  Train Loss: 0.0609, Train F1: 0.9711
+  Val Loss:   0.1276, Val F1:   0.9467
+  Val Accuracy: 0.9569, Precision: 0.9493, Recall: 0.9441
+Validation F1 improved from 0.9433 to 0.9467. Saving model...
+
+--- Epoch 25/30 ---
+                                                             
+Epoch 25 Summary | Time: 544.54s | LR: 0.000008
+  Train Loss: 0.0567, Train F1: 0.9735
+  Val Loss:   0.1297, Val F1:   0.9477
+  Val Accuracy: 0.9573, Precision: 0.9463, Recall: 0.9491
+Validation F1 improved from 0.9467 to 0.9477. Saving model...
+
+--- Epoch 26/30 ---
+                                                             
+Epoch 26 Summary | Time: 565.01s | LR: 0.000005
+  Train Loss: 0.0544, Train F1: 0.9747
+  Val Loss:   0.1276, Val F1:   0.9485
+  Val Accuracy: 0.9582, Precision: 0.9493, Recall: 0.9478
+Validation F1 improved from 0.9477 to 0.9485. Saving model...
+
+--- Epoch 27/30 ---
+                                                             
+Epoch 27 Summary | Time: 567.65s | LR: 0.000003
+  Train Loss: 0.0513, Train F1: 0.9759
+  Val Loss:   0.1274, Val F1:   0.9492
+  Val Accuracy: 0.9587, Precision: 0.9491, Recall: 0.9492
+Validation F1 improved from 0.9485 to 0.9492. Saving model...
+
+--- Epoch 28/30 ---
+                                                             
+Epoch 28 Summary | Time: 553.88s | LR: 0.000002
+  Train Loss: 0.0492, Train F1: 0.9772
+  Val Loss:   0.1261, Val F1:   0.9498
+  Val Accuracy: 0.9593, Precision: 0.9508, Recall: 0.9489
+Validation F1 improved from 0.9492 to 0.9498. Saving model...
+
+--- Epoch 29/30 ---
+                                                             
+Epoch 29 Summary | Time: 546.86s | LR: 0.000001
+  Train Loss: 0.0481, Train F1: 0.9775
+  Val Loss:   0.1248, Val F1:   0.9500
+  Val Accuracy: 0.9595, Precision: 0.9517, Recall: 0.9484
+Validation F1 improved from 0.9498 to 0.9500. Saving model...
+
+--- Epoch 30/30 ---
+                                                             
+Epoch 30 Summary | Time: 552.36s | LR: 0.000001
+  Train Loss: 0.0471, Train F1: 0.9783
+  Val Loss:   0.1265, Val F1:   0.9499
+  Val Accuracy: 0.9593, Precision: 0.9506, Recall: 0.9492
+
+Training finished.
+
+Step 4: Performing final evaluation on the test set...
+                                                             
+Average Uncertainty on Correct Predictions: 0.0612
+Average Uncertainty on Wrong Predictions:   0.3385
+Uncertainty plot saved as uncertainty_plot_edge_only.png
+
+--- Test Set Results ---
+  - Accuracy:  0.9604
+  - Precision: 0.9523 (Macro)
+  - Recall:    0.9502 (Macro)
+  - F1 Score:  0.9512 (Macro)
+Generating test report: 100%|██████████| 868/868 [01:08<00:00, 12.74it/s]
+--- Classification Report ---
+                  precision    recall  f1-score   support
+
+Class 0 (No IDC)       0.97      0.97      0.97     79495
+   Class 1 (IDC)       0.93      0.93      0.93     31515
+
+        accuracy                           0.96    111010
+       macro avg       0.95      0.95      0.95    111010
+    weighted avg       0.96      0.96      0.96    111010
+
+
+============================================================
+Step 5: Generating Attention Visualizations for Paper
+============================================================
+
+Generating attention visualizations...
+  Saved visualization 1/5
+  Saved visualization 2/5
+  Saved visualization 3/5
+  Saved visualization 4/5
+  Saved visualization 5/5
+All visualizations saved to 'attention_viz_edge_only/' directory
+
+Ablation study results saved to ablation_results_edge_only.csv
+
+ 

@@ -1,0 +1,2 @@
+attention_mode,test_accuracy,test_precision,test_recall,test_f1,avg_uncertainty_correct,avg_uncertainty_wrong
+none,0.9601837672281777,0.9512224794294077,0.9508072679597511,0.9510145593798291,0.059822384,0.3252779

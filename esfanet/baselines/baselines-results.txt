@@ -1,0 +1,38 @@
+Class Distribution:
+label
+0    397476
+1    157572
+Name: count, dtype: int64
+
+Training set size: 377432
+Validation set size: 66606
+Test set size: 111010
+
+attndensenet
+--- Final Test Results ---
+Test Accuracy: 0.9639
+Test Precision: 0.9209
+Test Recall: 0.9548
+Test F1-Score: 0.9375
+
+CBAM densenet
+--- Final Test Results ---
+Test Accuracy: 0.9647
+Test Precision: 0.9254
+Test Recall: 0.9525
+Test F1-Score: 0.9388
+
+attnresnet50
+--- Final Test Results ---
+Test Accuracy: 0.9441
+Test Precision: 0.8784
+Test Recall: 0.9320
+Test F1-Score: 0.9044
+
+attnvgg16
+--- Final Test Results ---
+Test Accuracy: 0.9439
+Test Precision: 0.8731
+Test Recall: 0.9390
+Test F1-Score: 0.9049
+

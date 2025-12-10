@@ -1,0 +1,19 @@
+Average Uncertainty on Correct Predictions: 0.0612
+Average Uncertainty on Wrong Predictions:   0.3385
+Uncertainty plot saved as uncertainty_plot_edge_only.png
+
+--- Test Set Results ---
+  - Accuracy:  0.9604
+  - Precision: 0.9523 (Macro)
+  - Recall:    0.9502 (Macro)
+  - F1 Score:  0.9512 (Macro)
+Generating test report: 100%|██████████| 868/868 [01:08<00:00, 12.74it/s]
+--- Classification Report ---
+                  precision    recall  f1-score   support
+
+Class 0 (No IDC)       0.97      0.97      0.97     79495
+   Class 1 (IDC)       0.93      0.93      0.93     31515
+
+        accuracy                           0.96    111010
+       macro avg       0.95      0.95      0.95    111010
+    weighted avg       0.96      0.96      0.96    111010
