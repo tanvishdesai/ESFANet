@@ -253,7 +253,6 @@ Risk Retention Curve Saved.
   - Precision: 0.9602 (Macro)
   - Recall:    0.9671 (Macro)
   - F1 Score:  0.9636 (Macro)
-Generating test report: 100%|██████████| 13/13 [00:08<00:00,  1.54it/s]
 --- Classification Report ---
               precision    recall  f1-score   support
 

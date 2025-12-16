@@ -33,39 +33,20 @@ FedAvg-B
     Final F1-Score:  0.7860
     Final AUC:       0.9187
 
-full - C
-  ======================================================================
-  FINAL RESULTS SUMMARY
-  ======================================================================
-
+FedAvg-C
   Classification Performance at Standard Threshold (0.50):
-    Final Accuracy:  0.8076
-    Final Precision: 0.7619
-    Final Recall:    0.8948
-    Final F1-Score:  0.8230
-    Final AUC:       0.9052
+    Final Accuracy:  0.8085
+    Final Precision: 0.7865
+    Final Recall:    0.8467
+    Final F1-Score:  0.8155
+    Final AUC:       0.8975
 
   Classification Performance at FedAlert Threshold (0.75):
-    Final Accuracy:  0.8035
-    Final Precision: 0.8871
-    Final Recall:    0.6954
-    Final F1-Score:  0.7796
-    Final AUC:       0.9052
-
-FedAlert_Only-B
-  Classification Performance at Standard Threshold (0.50):
-    Final Accuracy:  0.8123
-    Final Precision: 0.9240
-    Final Recall:    0.6803
-    Final F1-Score:  0.7837
-    Final AUC:       0.9188
-
-  Classification Performance at FedAlert Threshold (0.75):
-    Final Accuracy:  0.7661
-    Final Precision: 0.9515
-    Final Recall:    0.5606
-    Final F1-Score:  0.7055
-    Final AUC:       0.9188
+    Final Accuracy:  0.8081
+    Final Precision: 0.8545
+    Final Recall:    0.7424
+    Final F1-Score:  0.7945
+    Final AUC:       0.8975
 
 FedAlert_Only-A
   Classification Performance at Standard Threshold (0.50):
@@ -82,20 +63,35 @@ FedAlert_Only-A
     Final F1-Score:  0.7743
     Final AUC:       0.9170
 
-FedAvg-C
+FedAlert_Only-B
   Classification Performance at Standard Threshold (0.50):
-    Final Accuracy:  0.8085
-    Final Precision: 0.7865
-    Final Recall:    0.8467
-    Final F1-Score:  0.8155
-    Final AUC:       0.8975
+    Final Accuracy:  0.8123
+    Final Precision: 0.9240
+    Final Recall:    0.6803
+    Final F1-Score:  0.7837
+    Final AUC:       0.9188
 
   Classification Performance at FedAlert Threshold (0.75):
-    Final Accuracy:  0.8081
-    Final Precision: 0.8545
-    Final Recall:    0.7424
-    Final F1-Score:  0.7945
-    Final AUC:       0.8975
+    Final Accuracy:  0.7661
+    Final Precision: 0.9515
+    Final Recall:    0.5606
+    Final F1-Score:  0.7055
+    Final AUC:       0.9188
+
+FedAlert_Only-C
+  Classification Performance at Standard Threshold (0.50):
+    Final Accuracy:  0.4998
+    Final Precision: 0.4998
+    Final Recall:    1.0000
+    Final F1-Score:  0.6665
+    Final AUC:       0.8740
+
+  Classification Performance at FedAlert Threshold (0.75):
+    Final Accuracy:  0.4998
+    Final Precision: 0.4998
+    Final Recall:    1.0000
+    Final F1-Score:  0.6665
+    Final AUC:       0.8740
 
 FedProx-A
   Classification Performance at Standard Threshold (0.50):
@@ -172,6 +168,25 @@ Full-B
     Final F1-Score:  0.7420
     Final AUC:       0.9197
 
+Full-C
+  ======================================================================
+  FINAL RESULTS SUMMARY
+  ======================================================================
+
+  Classification Performance at Standard Threshold (0.50):
+    Final Accuracy:  0.8076
+    Final Precision: 0.7619
+    Final Recall:    0.8948
+    Final F1-Score:  0.8230
+    Final AUC:       0.9052
+
+  Classification Performance at FedAlert Threshold (0.75):
+    Final Accuracy:  0.8035
+    Final Precision: 0.8871
+    Final Recall:    0.6954
+    Final F1-Score:  0.7796
+    Final AUC:       0.9052
+
 Consensus_Only-A
   Classification Performance at Standard Threshold (0.50):
     Final Accuracy:  0.8484
@@ -186,21 +201,6 @@ Consensus_Only-A
     Final Recall:    0.7227
     Final F1-Score:  0.8054
     Final AUC:       0.9262
-
-FedAlert_Only-C
-  Classification Performance at Standard Threshold (0.50):
-    Final Accuracy:  0.4998
-    Final Precision: 0.4998
-    Final Recall:    1.0000
-    Final F1-Score:  0.6665
-    Final AUC:       0.8740
-
-  Classification Performance at FedAlert Threshold (0.75):
-    Final Accuracy:  0.4998
-    Final Precision: 0.4998
-    Final Recall:    1.0000
-    Final F1-Score:  0.6665
-    Final AUC:       0.8740
 
 Consensus_Only-B
   Classification Performance at Standard Threshold (0.50):
@@ -231,3 +231,35 @@ Consensus_Only-C
     Final Recall:    0.7280
     Final F1-Score:  0.8015
     Final AUC:       0.9134
+
+
+
+scenario C distribution:
+Creating non-IID splits for 5 clients...
+  Creating client splits for Scenario 'C' (Dirichlet alpha=0.5)
+  Successfully created a valid split where all clients have data (using seed 1).
+  Client 1 - Samples: 94099, Class dist: [ 3672 90427], Weights: [12.813045   1.0406073]
+  Client 2 - Samples: 25140, Class dist: [15421  9719], Weights: [0.81512225 2.586686  ]
+  Client 3 - Samples: 5463, Class dist: [3886 1577], Weights: [0.70290786 3.4641724 ]
+  Client 4 - Samples: 91029, Class dist: [87420  3609], Weights: [ 0.52064174 25.222776  ]
+
+
+scenario B distribution:
+Creating non-IID splits for 5 clients...
+  Creating client splits for Scenario 'B' (Dirichlet alpha=1.0)
+  Successfully created a valid split where all clients have data (using seed 1).
+  Client 0 - Samples: 31025, Class dist: [26045  4980], Weights: [0.59560376 6.22992   ]
+  Client 1 - Samples: 124448, Class dist: [71228 53220], Weights: [0.87358904 2.3383691 ]
+  Client 2 - Samples: 75505, Class dist: [22627 52878], Weights: [1.6684713 1.4279095]
+  Client 3 - Samples: 7467, Class dist: [2385 5082], Weights: [1.5654088 1.4693034]
+  Client 4 - Samples: 23699, Class dist: [ 8787 14912], Weights: [1.3485262 1.589257 ]
+
+
+Creating non-IID splits for 5 clients...
+  Creating client splits for Scenario 'A' (Dirichlet alpha=10.0)
+  Successfully created a valid split where all clients have data (using seed 1).
+  Client 0 - Samples: 64918, Class dist: [30678 34240], Weights: [1.0580547 1.8959696]
+  Client 1 - Samples: 54268, Class dist: [22320 31948], Weights: [1.215681  1.6986353]
+  Client 2 - Samples: 56658, Class dist: [34296 22362], Weights: [0.8260147 2.5336733]
+  Client 3 - Samples: 36056, Class dist: [19992 16064], Weights: [0.9017607 2.2445219]
+  Client 4 - Samples: 50244, Class dist: [23786 26458], Weights: [1.0561675 1.8990097]

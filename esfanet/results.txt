@@ -1,0 +1,19 @@
+FINAL TEST RESULTS (GATED_FUSION):
+Accuracy: 0.9680
+F1 Score: 0.9605
+ECE (Calibration Error): 0.0107 (Lower is better)
+
+FINAL TEST RESULTS (GATED_FUSION)(monopoly):
+Accuracy: 0.9650
+F1 Score: 0.9570
+ECE (Calibration Error): 0.0057 (Lower is better)
+
+FINAL TEST RESULTS (NAIVE_FUSION):
+Accuracy: 0.9682
+F1 Score: 0.9608
+ECE (Calibration Error): 0.0118
+
+FINAL TEST RESULTS (RGB_ONLY):
+Accuracy: 0.9687
+F1 Score: 0.9614
+ECE (Calibration Error): 0.0122
