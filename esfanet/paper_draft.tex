@@ -1,0 +1,270 @@
+\documentclass[10pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{hyperref}
+
+\title{Uncertainty-Gated Evidence Fusion for Trustworthy Histopathology Classification with Evidential Deep Learning Agents}
+\author{Anonymous Authors}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Reliable medical image classification requires not only high predictive performance but also calibrated uncertainty and interpretable failure behavior. This work proposes \textbf{DST-AgenticNet}, a lightweight multi-agent classification architecture for breast histopathology patches in which modality-specialized ``agents'' produce \textbf{evidence} (Dirichlet parameters) rather than logits, and a learned \textbf{gating network} performs \textbf{evidence-level fusion} to dynamically weight agents per sample. Concretely, the model combines (i) an RGB agent based on a pretrained ResNet-18 encoder, (ii) an edge agent operating on fixed Sobel magnitude maps, and (iii) a frequency agent operating on FFT amplitude summaries. All agents are trained with an evidential deep learning objective that couples data fit with a KL regularizer to avoid overconfident predictions. Experiments comparing fusion strategies show that uncertainty-gated fusion achieves strong classification performance while maintaining low calibration error: gated fusion reaches \textbf{0.9680 accuracy}, \textbf{0.9605 macro-F1}, and \textbf{0.0107 ECE}, while a collapsed ``monopoly'' gating variant attains \textbf{0.0057 ECE} with slightly reduced accuracy/F1. The analysis of learned gate weights reveals interpretable global trust allocations and a failure mode in which the gate collapses to a single dominant agent. These results highlight evidence-level dynamic gating as a practical path toward calibrated and interpretable multimodal decision-making in safety-critical imaging.
+\end{abstract}
+
+\section{Introduction}
+\label{sec:intro}
+
+Breast histopathology patch classification is a core component of computer-aided diagnosis workflows and is often framed as binary discrimination between malignant and non-malignant tissue. While modern deep networks can achieve strong accuracy, medical deployment requires additional properties: (i) reliable uncertainty estimates to support risk-aware decisions, and (ii) interpretable mechanisms that can explain which information sources the model trusts for a given prediction. Standard deterministic softmax classifiers are known to be miscalibrated and can produce high-confidence errors, motivating alternatives that expose uncertainty in a principled way~\cite{sensoy2018,gao2024}.
+
+Multimodal and multi-expert designs offer another avenue for robustness: different ``views'' (e.g., texture, structure, spectral content) can complement each other when one view is degraded or non-informative. However, typical fusion approaches average or concatenate features/logits, which may implicitly assume equal reliability across views and can amplify overconfidence when all modalities are treated as equally trustworthy. Recent work on uncertainty-aware fusion emphasizes dynamic weighting of experts using uncertainty signals~\cite{lou2023,tian2020}, but many such methods rely on sampling-based Bayesian uncertainty, increasing compute and complicating deployment.
+
+This paper proposes \textbf{DST-AgenticNet}, a multi-agent architecture that fuses \textbf{evidence} (Dirichlet concentration parameters) produced by several modality-specialized agents trained with an evidential deep learning objective~\cite{sensoy2018}. A compact gating network predicts per-sample agent weights from the concatenated evidences and performs a weighted evidence sum. This design aligns the fusion mechanism with the semantics of evidential uncertainty: the gate modulates the amount of evidence contributed by each agent rather than post-hoc scaling of probabilities. Empirically, the approach yields competitive classification performance with low expected calibration error (ECE), and qualitatively exposes interpretable ``trust dynamics'' via gate weights.
+
+\paragraph{Contributions.}
+\begin{itemize}
+  \item \textbf{Evidence-level dynamic fusion:} a gating mechanism that weights per-agent evidence (Dirichlet parameters) rather than logits/probabilities, enabling uncertainty-aware decision-level fusion.
+  \item \textbf{Multi-agent evidential modeling:} three complementary agents (RGB, edge, frequency) trained using an evidential classification loss with annealed KL regularization~\cite{sensoy2018}.
+  \item \textbf{Failure-mode analysis:} explicit investigation of \textbf{gate collapse (``monopoly'')} vs.\ collaborative weighting and the resulting calibration/robustness implications.
+  \item \textbf{Evaluation with calibration:} reporting accuracy, macro-F1, and ECE to assess both performance and reliability.
+\end{itemize}
+
+\section{Related Work}
+\label{sec:related}
+
+\subsection{Evidential deep learning for calibrated uncertainty}
+Evidential deep learning (EDL) replaces point-probability outputs with parameters of a Dirichlet distribution, enabling uncertainty estimates from a single forward pass~\cite{sensoy2018}. Surveys consolidate training strategies and theoretical interpretations of evidence and belief in safety-critical contexts~\cite{gao2024}. Extensions to continuous targets further demonstrate that evidential modeling can scale to complex vision tasks while avoiding sampling-based Bayesian inference~\cite{amini2020}. Our work builds directly on the classification EDL formulation~\cite{sensoy2018}, using evidence outputs and KL regularization with annealing to reduce overconfidence.
+
+\subsection{Uncertainty-aware multimodal fusion and mixture-of-experts}
+Multimodal fusion methods span data-, feature-, and decision-level designs, with attention-based fusion and uncertainty-aware weighting emerging as practical strategies~\cite{li2025fusion}. Uncertainty-encoded mixture-of-experts architectures explicitly compute expert weights from uncertainty signals to improve robustness under modality degradation~\cite{lou2023}, and probabilistic fusion rules such as uncertainty-aware noisy-or have been studied to prevent brittle dependence on a single modality~\cite{tian2020}. In multi-agent perception, attention mechanisms weight contributions across agents for improved downstream performance~\cite{ahmed2023}. DST-AgenticNet aligns with these ideas but differs in two key aspects: it uses EDL-derived evidence to represent both confidence and uncertainty~\cite{sensoy2018}, and it performs evidence-level (Dirichlet-parameter) fusion rather than feature/logit fusion.
+
+\subsection{Dempster--Shafer theory and evidential fusion in deep networks}
+Dempster--Shafer theory (DST) provides a framework for combining uncertain evidence from multiple sources. Prior work integrates DS layers with deep networks for set-valued classification and evidence combination~\cite{tong2021} and demonstrates DST-based fusion in ensemble CNNs for robust recognition~\cite{yaghoubi2021}. In medical imaging, mutual evidential learning and evidential fusion strategies have been proposed to enhance uncertainty calibration and robustness~\cite{he2025}. Our method is inspired by these evidence-combination principles: each agent produces evidence and the fusion module performs a weighted evidence aggregation consistent with an evidential interpretation, while remaining simple and differentiable for end-to-end training.
+
+\subsection{Agentic and multi-agent trust framing}
+Surveys of agentic AI emphasize the need for trust and risk management in systems composed of multiple interacting components~\cite{raza2025,ali2025agentic}. Multi-agent settings highlight challenges in heterogeneous collaboration, which motivates mechanisms for adaptive weighting and coordination~\cite{feng2025}. While our model is not a generative tool-using agent system, it adopts an agentic abstraction---multiple specialized ``experts'' coordinated by a learned policy---and evaluates trust dynamics via calibration metrics and learned contribution weights~\cite{raza2025}.
+
+\section{Proposed Methodology}
+\label{sec:method}
+
+\subsection{Overall architecture overview}
+DST-AgenticNet is a supervised binary classifier that maps an input RGB histopathology patch $x \in \mathbb{R}^{3 \times H \times W}$ to (i) per-agent evidence vectors and (ii) a fused evidence vector used for prediction. The model comprises three agents:
+\begin{itemize}
+  \item \textbf{RGB agent:} a pretrained ResNet-18 feature extractor (final pooling output) followed by an MLP head that outputs nonnegative evidence via Softplus.
+  \item \textbf{Edge agent:} a fixed Sobel operator generates a single-channel edge magnitude map, processed by a small CNN and an evidence head (Softplus).
+  \item \textbf{Frequency agent:} a 2D FFT on the grayscale image yields amplitude spectra; a pooled spectral vector is mapped to evidence via an MLP head (Softplus).
+\end{itemize}
+Let $e^{(a)}(x) \in \mathbb{R}_{\ge 0}^{K}$ denote the evidence produced by agent $a \in \{1,2,3\}$ for $K$ classes (here $K=2$). These evidences are stacked into a tensor $E(x) \in \mathbb{R}_{\ge 0}^{A \times K}$ with $A=3$.
+
+\subsection{Evidential predictive distribution}
+Following EDL~\cite{sensoy2018}, evidence is converted to Dirichlet concentration parameters:
+\begin{equation}
+  \alpha^{(a)}(x) = e^{(a)}(x) + \mathbf{1}.
+\end{equation}
+Given any evidence vector $e$, the predictive class probabilities are computed from the Dirichlet mean:
+\begin{equation}
+  p(y=k \mid x) = \frac{\alpha_k}{\sum_{j=1}^{K} \alpha_j}.
+\end{equation}
+This probability is used both for prediction and for calibration evaluation (ECE).
+
+\subsection{Uncertainty-gated evidence fusion (proposed)}
+The fusion module predicts per-sample agent weights from the concatenated evidences:
+\begin{equation}
+  w(x) = \mathrm{softmax}\left(g\left(\mathrm{vec}(E(x))\right)\right) \in \Delta^{A-1},
+\end{equation}
+where $g(\cdot)$ is a two-layer MLP with ReLU and $\Delta^{A-1}$ is the $A$-simplex. The fused evidence is a weighted sum:
+\begin{equation}
+  e^{(\mathrm{fuse})}(x) = \sum_{a=1}^{A} w_a(x)\, e^{(a)}(x).
+\end{equation}
+The key design choice is that the gate weights \textbf{evidence} rather than probabilities/logits. The fused evidence is then converted to $\alpha^{(\mathrm{fuse})}(x) = e^{(\mathrm{fuse})}(x) + \mathbf{1}$ and used for prediction and loss computation.
+
+We compare the proposed fusion against two ablations implemented in the same codebase: \textbf{RGB-only} (predict using only $e^{(\mathrm{RGB})}$) and \textbf{naive fusion} (unweighted evidence sum $e^{(\mathrm{fuse})} = \sum_a e^{(a)}$).
+
+\subsection{Training objective and optimization}
+All evidence heads are trained with an evidential loss adapted from~\cite{sensoy2018}. Given one-hot label $y \in \{0,1\}^K$ and belief vector $\hat{p}=\alpha/S$ with $S=\sum_k \alpha_k$, the loss includes a data-fit term with an uncertainty-dependent variance component and a KL regularizer encouraging appropriate uncertainty:
+\begin{equation}
+  \mathcal{L}_{\mathrm{EDL}} = \mathcal{L}_{\mathrm{mse}}(y, \hat{p}, \alpha) + \lambda(t)\,\mathrm{KL}\!\left(\tilde{\alpha}\,\|\,\mathbf{1}\right),
+\end{equation}
+where $\lambda(t)$ is an annealing coefficient increasing with epoch $t$, and $\tilde{\alpha}$ is a label-dependent transformation used in the provided implementation~\cite{sensoy2018}.
+
+To prevent weak experts from collapsing during fusion training, an auxiliary ``deep supervision'' term is applied to individual agents (scaled by $0.2$ in the provided implementation) so that each agent continues to receive a learning signal even when its gate weight is small.
+
+\section{Experiments and Results}
+\label{sec:exp}
+
+\subsection{Experimental Setup}
+\textbf{Task and data.} The implementation trains on a breast histopathology patch dataset organized as PNG images with class labels parsed from filenames (binary classification). Data are split with stratification into 70\% train, 15\% validation, and 15\% test.
+
+\textbf{Preprocessing.} Images are resized to $96 \times 96$, converted to tensors, and normalized using ImageNet mean and standard deviation.
+
+\textbf{Training.} The code trains for 20 epochs with batch size 128, using AdamW with learning rate $10^{-4}$. Training is performed on a single CUDA-capable GPU when available (otherwise CPU).
+
+\textbf{Metrics.} We report accuracy, macro-F1, and expected calibration error (ECE) computed with 15 confidence bins from the Dirichlet-mean probabilities.
+
+\subsection{Quantitative Results}
+Table~\ref{tab:main} reproduces the results from \texttt{results.txt} exactly.
+
+\begin{table}[t]
+  \centering
+  \caption{Test performance and calibration across fusion strategies (from \texttt{results.txt}). Lower ECE is better.}
+  \label{tab:main}
+  \begin{tabular}{lccc}
+    \toprule
+    Method & Accuracy & Macro-F1 & ECE $\downarrow$ \\
+    \midrule
+    GATED\_FUSION & 0.9680 & 0.9605 & 0.0107 \\
+    GATED\_FUSION (monopoly; collapse) & 0.9650 & 0.9570 & 0.0057 \\
+    NAIVE\_FUSION & 0.9682 & 0.9608 & 0.0118 \\
+    RGB\_ONLY & 0.9687 & 0.9614 & 0.0122 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Gating Behavior: collaborative vs.\ monopoly collapse}
+Figure~\ref{fig:global_importance} shows global mean gate weights under a collaborative regime versus the monopoly collapse regime. Figure~\ref{fig:gating_distribution} shows the corresponding per-sample gating distributions. In the collaborative regime, weights are shared across RGB/edge/frequency and vary across samples; in monopoly, the gate collapses to near-1 weight on RGB and near-0 on the remaining agents.
+
+\begin{figure}[t]
+  \centering
+  \begin{subfigure}[t]{0.48\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{gated-collaborative.png}
+    \caption{Collaborative global weights (all agents contribute).}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.48\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{gated-monopoly.png}
+    \caption{Monopoly global weights (RGB dominates).}
+  \end{subfigure}
+  \caption{Global agent importance inferred from learned gate weights.}
+  \label{fig:global_importance}
+\end{figure}
+
+\begin{figure}[t]
+  \centering
+  \begin{subfigure}[t]{0.48\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{gated-acollaborative-distibution-graph.png}
+    \caption{Collaborative weight distributions (adaptive fusion).}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.48\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{gated-monopoly-distribution.png}
+    \caption{Monopoly distributions (collapse to RGB).}
+  \end{subfigure}
+  \caption{Per-sample gating distributions demonstrating adaptive weighting vs.\ gate collapse.}
+  \label{fig:gating_distribution}
+\end{figure}
+
+\subsection{Results Discussion}
+\textbf{Performance vs.\ calibration trade-off.} The reported results are close in accuracy and macro-F1 across all strategies, suggesting that the classification task is solvable even with a single strong RGB backbone. However, calibration differs: gated fusion improves ECE relative to RGB-only (0.0107 vs.\ 0.0122), indicating better alignment between predicted confidence and empirical correctness. The monopoly variant achieves a lower ECE (0.0057) but is treated as a \textbf{failure mode}: it corresponds to near-deterministic selection of a single agent (RGB), which undermines the intended multi-agent robustness and trust decomposition.
+
+\textbf{Why ``better numbers'' can still be failure.} A lower ECE in the monopoly regime is not, by itself, evidence of better multi-agent behavior: if the gate collapses, the system degenerates into an RGB-only predictor with extra overhead. This collapse removes the opportunity for edge/frequency agents to compensate when RGB is corrupted or insufficient. In other words, monopoly can be \textbf{well-calibrated yet fragile}, because calibration is measured on the same test distribution and does not guarantee resilience to agent-specific degradations or distribution shifts. This observation aligns with the motivation in uncertainty-aware fusion literature that dynamic weighting should preserve complementary experts under degradations rather than collapsing to a single modality~\cite{lou2023,tian2020}.
+
+\section{Limitations}
+\label{sec:limits}
+
+\textbf{Dataset and evaluation scope.} The current experiments focus on a single binary histopathology classification setting with a fixed train/validation/test split, and the reported results do not establish cross-dataset generalization.
+
+\textbf{Fusion operator simplicity.} The fusion step is implemented as a weighted evidence sum. While differentiable and stable, this is a simplified approximation of richer DST combination operators that explicitly model conflict~\cite{tong2021,yaghoubi2021}.
+
+\textbf{Gate collapse risk.} The system can exhibit a failure mode where the gate collapses to a single dominant agent (``monopoly''), reducing the benefits of multi-agent specialization. Even if some metrics (e.g., ECE) improve under collapse on a fixed test set, this behavior is undesirable because it eliminates complementary information sources and can reduce robustness to modality-specific corruption. Collapse should therefore be treated as a failure mode and actively monitored/mitigated.
+
+\textbf{Compute and implementation constraints.} Although EDL avoids sampling-based uncertainty estimation~\cite{sensoy2018}, the model still includes multiple forward paths (agents), increasing inference cost compared to a single-network baseline. Hardware specifics (GPU model, memory) were not logged in the provided implementation and therefore are not reported.
+
+\section{Conclusion and Future Work}
+\label{sec:conclusion}
+
+This paper introduced DST-AgenticNet, an uncertainty-aware multi-agent classifier that performs \textbf{evidence-level dynamic fusion} using a learned gate over evidential agents. The approach leverages evidential deep learning to obtain uncertainty from a single forward pass~\cite{sensoy2018} and exposes interpretable trust dynamics through gating weights. Empirical results show strong classification performance with low calibration error, and reveal a meaningful collapse-vs-collaboration behavior that can be analyzed and regularized.
+
+Future work includes: (i) evaluating generalization across additional histopathology datasets and shifts, (ii) integrating explicit conflict modeling inspired by DST layers~\cite{tong2021,yaghoubi2021}, and (iii) extending the gating mechanism with uncertainty features (e.g., total evidence or subjective uncertainty mass) to more directly align gating with reliability signals, as suggested by uncertainty-aware fusion literature~\cite{lou2023,tian2020,he2025,fang2025}.
+
+\begin{thebibliography}{99}
+
+\bibitem{sensoy2018}
+M. Sensoy et al.
+\newblock Evidential Deep Learning to Quantify Classification Uncertainty.
+\newblock 2018.
+
+\bibitem{ahmed2023}
+Ahmed et al.
+\newblock Attention Based Feature Fusion For Multi-Agent Collaborative Perception.
+\newblock 2023.
+
+\bibitem{gao2024}
+Y. Gao et al.
+\newblock A Comprehensive Survey on Evidential Deep Learning and Its Applications.
+\newblock 2024.
+
+\bibitem{li2025fusion}
+Li et al.
+\newblock Multimodal Alignment and Fusion: A Survey.
+\newblock 2025.
+
+\bibitem{lou2023}
+Lou et al.
+\newblock Uncertainty-Encoded Multi-Modal Fusion for Robust Object Detection in Autonomous Driving.
+\newblock 2023.
+
+\bibitem{tian2020}
+Tian et al.
+\newblock UNO: Uncertainty-aware Noisy-Or Multimodal Fusion for Unanticipated Input Degradation.
+\newblock 2020.
+
+\bibitem{tong2021}
+Tong et al.
+\newblock An evidential classifier based on Dempster-Shafer theory and deep learning.
+\newblock 2021.
+
+\bibitem{amini2020}
+A. Amini et al.
+\newblock Deep Evidential Regression.
+\newblock 2020.
+
+\bibitem{yaghoubi2021}
+Yaghoubi et al.
+\newblock CNN-DST: ensemble deep learning based on Dempster-Shafer theory for vibration-based fault recognition.
+\newblock 2021.
+
+\bibitem{he2025}
+He et al.
+\newblock Mutual Evidential Deep Learning for Medical Image Segmentation.
+\newblock 2025.
+
+\bibitem{fang2025}
+Fang et al.
+\newblock Dynamic Uncertainty-aware Multimodal Fusion for Outdoor Health Monitoring.
+\newblock 2025.
+
+\bibitem{raza2025}
+Raza et al.
+\newblock TRiSM for Agentic AI: A Review of Trust, Risk, and Security Management.
+\newblock 2025.
+
+\bibitem{ali2025agentic}
+Ali and Dornaika.
+\newblock Agentic AI: A Comprehensive Survey of Architectures, Applications, and Future Directions.
+\newblock 2025.
+
+\bibitem{feng2025}
+Feng et al.
+\newblock Multi-Agent Embodied AI: Advances and Future Directions.
+\newblock 2025.
+
+\bibitem{huang2025}
+Huang et al.
+\newblock Latent Distribution Decoupling: A Probabilistic Framework for Uncertainty-Aware Multimodal Emotion Recognition.
+\newblock 2025.
+
+\end{thebibliography}
+
+\end{document}
+
+

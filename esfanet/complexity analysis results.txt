@@ -1,0 +1,29 @@
+[2/6] Counting parameters...
+  Total parameters: 11,418,889
+
+[3/6] Measuring inference latency...
+  Single image latency: 3.63 ms
+
+[4/6] Measuring memory usage...
+  Peak GPU memory: 128.31 MB
+
+[5/6] Getting model file size...
+  Model file size: 43.65 MB
+
+[6/6] Calculating dataset statistics...
+  Total images: 555,048
+  Class 0 (Non-IDC): 397,476
+  Class 1 (IDC): 157,572
+
+Metrics saved to: ./complexity_metrics.json
+Report saved to: ./complexity_report.md
+
+============================================================
+                    SUMMARY
+============================================================
+Total Parameters:     11,418,889
+Trainable Parameters: 11,418,889
+Single Image Latency: 3.63 ms
+Peak GPU Memory:      128.31 MB
+Model File Size:      43.65 MB
+============================================================
